@@ -406,15 +406,105 @@ group14 = testGroup "duplicate elements of a list" [
 dupli :: [a] -> [a]
 dupli xs = xs >>= (replicate 2)
 
+{-
+Problem 15
 
+(**) Replicate the elements of a list a given number of times.
 
+Example:
 
+* (repli '(a b c) 3)
+(A A A B B B C C C)
+
+Example in Haskell:
+
+> repli "abc" 3
+"aaabbbccc"
+-}
 group15 :: TestTree
-group15 = testGroup "15" []
+group15 = testGroup "replicate the elements of a list a given number of times" [
+    testCase "empty list" $
+      "" @=? repli "" 5
+    , testCase "0 replications" $
+      "" @=? repli "abc" 0
+    , testCase "full example" $
+      "aaabbbccc" @=? repli "abc" 3
+  ]
+repli :: [a] -> Int -> [a]
+repli xs k = xs >>= replicate k
+
+{-
+Problem 16
+
+(**) Drop every N'th element from a list.
+
+Example:
+
+* (drop '(a b c d e f g h i k) 3)
+(A B D E G H K)
+
+Example in Haskell:
+
+*Main> dropEvery "abcdefghik" 3
+"abdeghk"
+-}
 group16 :: TestTree
-group16 = testGroup "16" []
+group16 = testGroup "Drop every nth element from a list" [
+    testCase "empty list" $
+      "" @=? dropEvery "" 5
+    , testCase "0th elements" $
+      "abc" @=? dropEvery "abc" 0
+    , testCase "1th elements" $
+      "" @=? dropEvery "abc" 1
+    , testCase "full example" $
+      "abdeghk" @=? dropEvery "abcdefghik" 3
+  ]
+
+dropEvery :: [a] -> Int -> [a]
+dropEvery xs 0 = xs
+dropEvery [] _ = []
+dropEvery xs k = map snd . filter (not . dividesK . fst) $ zip [1..] xs
+  where dividesK v = v `mod` k == 0
+
+{-
+Problem 17
+
+(*) Split a list into two parts; the length of the first part is given.
+
+Do not use any predefined predicates.
+
+Example:
+
+* (split '(a b c d e f g h i k) 3)
+( (A B C) (D E F G H I K))
+
+Example in Haskell:
+
+*Main> split "abcdefghik" 3
+("abc", "defghik")
+-}
 group17 :: TestTree
-group17 = testGroup "17" []
+group17 = testGroup "split list into 2 parts" [
+    testCase "empty list" $
+      ("", "") @=? split "" 0
+    , testCase "split at 0" $
+      ("", "abc") @=? split "abc" 0
+    , testCase "split beyond size" $
+      ("abc", "") @=? split "abc" 10
+    , testCase "full example" $
+      ("abc", "defghik") @=? split "abcdefghik" 3
+  ]
+
+-- no predefined predicates!
+-- Otherwise: split xs k = (take k xs, drop k xs)
+split :: [a] -> Int -> ([a], [a])
+split [] _ = ([], [])
+split l@(x:xs) k
+  | k > 0 = (x : ys, zs)
+  | otherwise = ([], l)
+    where (ys, zs) = split xs (k - 1)
+
+
 group18 :: TestTree
 group18 = testGroup "18" []
 group19 :: TestTree
